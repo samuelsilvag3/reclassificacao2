@@ -44,42 +44,62 @@ class App extends React.Component {
 
     const newClassifiedInvoices = { ...this.state.classifiedInvoices }
     const costCenter = destination.droppableId
-    
-    // Encontrar o fornecedor e a nota fiscal
-    let foundInvoice = null
-    let sourceSupplier = null
 
-    for (const supplier of this.state.invoices) {
-      const invoice = supplier.invoices.find(inv => inv.id === draggableId)
-      if (invoice) {
-        foundInvoice = invoice
-        sourceSupplier = supplier
-        break
+    // Verifica se é um fornecedor sendo arrastado
+    if (draggableId.startsWith('supplier-')) {
+      const supplierId = draggableId.replace('supplier-', '')
+      const supplier = this.state.invoices.find(s => s.id === supplierId)
+      
+      if (supplier) {
+        // Adiciona todas as notas do fornecedor ao centro de custo
+        newClassifiedInvoices[costCenter] = [
+          ...(newClassifiedInvoices[costCenter] || []),
+          ...supplier.invoices
+        ]
+
+        // Remove o fornecedor da lista original
+        const newInvoices = this.state.invoices.filter(s => s.id !== supplierId)
+
+        this.setState({
+          classifiedInvoices: newClassifiedInvoices,
+          invoices: newInvoices
+        })
       }
-    }
+    } else {
+      // Lógica existente para notas fiscais individuais
+      let foundInvoice = null
+      let sourceSupplier = null
 
-    if (foundInvoice) {
-      // Adicionar a nota fiscal ao centro de custo
-      newClassifiedInvoices[costCenter] = [
-        ...(newClassifiedInvoices[costCenter] || []),
-        foundInvoice
-      ]
-
-      // Atualizar o estado removendo a nota fiscal do fornecedor original
-      const newInvoices = this.state.invoices.map(supplier => {
-        if (supplier.id === sourceSupplier.id) {
-          return {
-            ...supplier,
-            invoices: supplier.invoices.filter(inv => inv.id !== draggableId)
-          }
+      for (const supplier of this.state.invoices) {
+        const invoice = supplier.invoices.find(inv => inv.id === draggableId)
+        if (invoice) {
+          foundInvoice = invoice
+          sourceSupplier = supplier
+          break
         }
-        return supplier
-      })
+      }
 
-      this.setState({
-        classifiedInvoices: newClassifiedInvoices,
-        invoices: newInvoices
-      })
+      if (foundInvoice) {
+        newClassifiedInvoices[costCenter] = [
+          ...(newClassifiedInvoices[costCenter] || []),
+          foundInvoice
+        ]
+
+        const newInvoices = this.state.invoices.map(supplier => {
+          if (supplier.id === sourceSupplier.id) {
+            return {
+              ...supplier,
+              invoices: supplier.invoices.filter(inv => inv.id !== draggableId)
+            }
+          }
+          return supplier
+        })
+
+        this.setState({
+          classifiedInvoices: newClassifiedInvoices,
+          invoices: newInvoices
+        })
+      }
     }
   }
 
