@@ -6,8 +6,22 @@ import './App.css'
 import ReactDOM from 'react-dom'
 
 const initialInvoices = [
-  { id: 'fornecedor1', name: 'Fornecedor 1', invoices: ['NF001', 'NF002'] },
-  { id: 'fornecedor2', name: 'Fornecedor 2', invoices: ['NF003', 'NF004'] },
+  { 
+    id: 'fornecedor1', 
+    name: 'Fornecedor 1', 
+    invoices: [
+      { id: 'NF001', number: 'NF001' },
+      { id: 'NF002', number: 'NF002' }
+    ] 
+  },
+  { 
+    id: 'fornecedor2', 
+    name: 'Fornecedor 2', 
+    invoices: [
+      { id: 'NF003', number: 'NF003' },
+      { id: 'NF004', number: 'NF004' }
+    ] 
+  },
   // Adicione mais fornecedores e notas fiscais conforme necessário
 ]
 
@@ -30,17 +44,41 @@ class App extends React.Component {
 
     const newClassifiedInvoices = { ...this.state.classifiedInvoices }
     const costCenter = destination.droppableId
-    const supplierGroup = this.state.invoices.find(supplier => supplier.id === draggableId)
+    
+    // Encontrar o fornecedor e a nota fiscal
+    let foundInvoice = null
+    let sourceSupplier = null
 
-    if (supplierGroup) {
+    for (const supplier of this.state.invoices) {
+      const invoice = supplier.invoices.find(inv => inv.id === draggableId)
+      if (invoice) {
+        foundInvoice = invoice
+        sourceSupplier = supplier
+        break
+      }
+    }
+
+    if (foundInvoice) {
+      // Adicionar a nota fiscal ao centro de custo
       newClassifiedInvoices[costCenter] = [
         ...(newClassifiedInvoices[costCenter] || []),
-        supplierGroup
+        foundInvoice
       ]
+
+      // Atualizar o estado removendo a nota fiscal do fornecedor original
+      const newInvoices = this.state.invoices.map(supplier => {
+        if (supplier.id === sourceSupplier.id) {
+          return {
+            ...supplier,
+            invoices: supplier.invoices.filter(inv => inv.id !== draggableId)
+          }
+        }
+        return supplier
+      })
 
       this.setState({
         classifiedInvoices: newClassifiedInvoices,
-        invoices: this.state.invoices.filter(supplier => supplier.id !== draggableId)
+        invoices: newInvoices
       })
     }
   }

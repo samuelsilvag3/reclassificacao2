@@ -1,45 +1,45 @@
 import React from 'react';
 import { Droppable, Draggable } from 'react-beautiful-dnd';
 
-class InvoiceList extends React.Component {
-  render() {
-    return (
-      <Droppable droppableId="invoice-list">
-        {(provided) => (
-          <div
-            {...provided.droppableProps}
-            ref={provided.innerRef}
-            className="invoice-container"
-          >
-            {this.props.invoices.map((supplier, index) => (
-              <Draggable
-                key={supplier.id}
-                draggableId={supplier.id}
-                index={index}
+const InvoiceList = ({ invoices }) => {
+  return (
+    <div>
+      {invoices.map(supplier => (
+        <div key={supplier.id} className="supplier-container">
+          <h3>{supplier.name}</h3>
+          <Droppable droppableId={supplier.id}>
+            {(provided) => (
+              <div
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                className="invoice-container"
               >
-                {(provided) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                    className="supplier-card"
+                {supplier.invoices.map((invoice, index) => (
+                  <Draggable
+                    key={invoice.id}
+                    draggableId={invoice.id}
+                    index={index}
                   >
-                    <h3>{supplier.name}</h3>
-                    <ul>
-                      {supplier.invoices.map((invoice) => (
-                        <li key={invoice}>{invoice}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </Draggable>
-            ))}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
-    );
-  }
-}
+                    {(provided) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        className="invoice-item"
+                      >
+                        Nota Fiscal: {invoice.number}
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </div>
+      ))}
+    </div>
+  );
+};
 
 export default InvoiceList;

@@ -4,33 +4,38 @@
 
 .container {
   display: flex;
-  justify-content: space-between;
+  gap: 2rem;
   padding: 20px;
 }
 
 .invoice-list, .cost-center-list {
-  width: 45%;
+  flex: 1;
 }
 
-.supplier-group {
-  background-color: #f0f0f0;
-  margin-bottom: 10px;
-  padding: 10px;
-  border-radius: 5px;
+.supplier-container, .cost-center {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background-color: #f5f5f5;
+  border-radius: 4px;
 }
 
-.cost-center {
-  background-color: #e0e0e0;
-  margin-bottom: 10px;
-  padding: 10px;
-  border-radius: 5px;
+.invoice-container, .cost-center-container {
+  min-height: 100px;
+  padding: 8px;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
 }
 
-ul {
-  list-style-type: none;
-  padding-left: 0;
+.invoice-item {
+  padding: 8px;
+  margin: 4px 0;
+  background-color: #e9ecef;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  cursor: grab;
 }
 
-li {
-  margin-bottom: 5px;
+.invoice-item:hover {
+  background-color: #dee2e6;
 }
